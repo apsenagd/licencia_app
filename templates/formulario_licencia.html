@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Licencia</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container mt-5 mb-5">
+
+    <div class="form-card">
+
+        <div class="text-center mb-4">
+            <h2 class="titulo-principal">Solicitud de Licencia</h2>
+            <p class="subtitulo">Complete la información requerida</p>
+        </div>
+
+        <form action="/vista2" method="POST">
+
+            <input type="hidden" name="id_solicitud" value="{{ id_solicitud }}">
+            <input type="hidden" name="encargado" value="{{ encargado }}">
+            <input type="hidden" name="area" value="{{ area }}">
+            <input type="hidden" name="subarea" value="{{ subarea }}">
+            <input type="hidden" name="fecha_hora" value="{{ fecha_hora }}">
+            <input type="hidden" name="solicitante" value="{{ solicitante }}">
+
+            <div class="mb-3">
+                <label class="form-label">Nombre de la Licencia/Herramienta</label>
+                <input type="text" name="licencia" class="form-control custom-input" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción de la Licencia/Herramienta</label>
+                <textarea name="uso" class="form-control custom-input" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Tipo de herramienta</label>
+                <select id="tipo_herramienta_select" name="tipo_herramienta" class="form-select custom-input" required>
+                    <option value="" disabled selected>Selecciona un tipo</option>
+                    <option value="Aplicativo web">Aplicativo web</option>
+                    <option value="Software solo en mi computador">Software solo en mi computador</option>
+                    <option value="Bases de datos">Bases de datos</option>
+                    <option value="Software de la empresa">Software de la empresa</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="herramienta_detalle_group" style="display: none;">
+                <label class="form-label">¿Cuál licencia/herramienta vas a solicitar?</label>
+                <input type="text" id="herramienta_detalle_input" name="herramienta_detalle" class="form-control custom-input" placeholder="Escribe el nombre de la herramienta o licencia">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Licenciamiento</label>
+                <select id="licenciamiento_select" name="licenciamiento" class="form-select custom-input" required>
+                    <option value="" disabled selected>Selecciona el tipo de licenciamiento</option>
+                    <option value="Propio">Propio</option>
+                    <option value="Licenciado">Licenciado</option>
+                    <option value="Gratuito">Gratuito</option>
+                    <option value="Desarrollo Interno">Desarrollo Interno</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="modo_licenciamiento_group" style="display: none;">
+                <label class="form-label">Modo de licenciamiento</label>
+                <input type="text" id="modo_licenciamiento_input" name="modo_licenciamiento" class="form-control custom-input" placeholder="Escribe el modo de licenciamiento">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Proveedor de la herramienta o licencia</label>
+                <input type="text" name="proveedor" class="form-control custom-input" placeholder="Nombre del proveedor" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Con qué frecuencia utilizas esta herramienta o licencia?</label>
+                <select id="frecuencia_select" name="frecuencia" class="form-select custom-input" required>
+                    <option value="" disabled selected>Selecciona una frecuencia</option>
+                    <option value="En todo momento">En todo momento</option>
+                    <option value="Diario">Diario</option>
+                    <option value="Semanal">Semanal</option>
+                    <option value="Mensual">Mensual</option>
+                    <option value="Trimestral">Trimestral</option>
+                    <option value="Semestral">Semestral</option>
+                    <option value="Anual">Anual</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="mb-3" id="frecuencia_otro_group" style="display: none;">
+                <label class="form-label">Si elegiste otro, especifica la frecuencia</label>
+                <input type="text" id="frecuencia_otro_input" name="frecuencia_otro" class="form-control custom-input" placeholder="Describe la frecuencia" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">¿Tienes conocimiento de la fecha de vencimiento de la licencia/herramienta?</label>
+                <select id="conocimiento_vigencia_select" name="conocimiento_vigencia" class="form-select custom-input" required>
+                    <option value="" disabled selected>Selecciona una opción</option>
+                    <option value="Si">Sí</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="row" id="vigencia_group" style="display: none;">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Fecha de vencimiento de la licencia/herramienta</label>
+                    <input type="date" id="vigencia_input" name="vigencia" class="form-control custom-input">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success btn-custom w-100">
+                Siguiente
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    const tipoHerramientaSelect = document.getElementById('tipo_herramienta_select');
+    const herramientaDetalleGroup = document.getElementById('herramienta_detalle_group');
+    const herramientaDetalleInput = document.getElementById('herramienta_detalle_input');
+    const licenciamientoSelect = document.getElementById('licenciamiento_select');
+    const modoLicenciamientoGroup = document.getElementById('modo_licenciamiento_group');
+    const modoLicenciamientoInput = document.getElementById('modo_licenciamiento_input');
+    const frecuenciaSelect = document.getElementById('frecuencia_select');
+    const frecuenciaOtroGroup = document.getElementById('frecuencia_otro_group');
+    const frecuenciaOtroInput = document.getElementById('frecuencia_otro_input');
+    const conocimientoVigenciaSelect = document.getElementById('conocimiento_vigencia_select');
+    const vigenciaGroup = document.getElementById('vigencia_group');
+    const vigenciaInput = document.getElementById('vigencia_input');
+
+    function toggleHerramientaDetalle() {
+        if (!tipoHerramientaSelect || !herramientaDetalleGroup || !herramientaDetalleInput) {
+            return;
+        }
+
+        const mostrar = tipoHerramientaSelect.value === 'Otro';
+        herramientaDetalleGroup.style.display = mostrar ? 'block' : 'none';
+        herramientaDetalleInput.required = mostrar;
+
+        if (!mostrar) {
+            herramientaDetalleInput.value = '';
+        }
+    }
+
+    function toggleModoLicenciamiento() {
+        if (!licenciamientoSelect || !modoLicenciamientoGroup || !modoLicenciamientoInput) {
+            return;
+        }
+
+        const mostrar = licenciamientoSelect.value === 'Otro';
+        modoLicenciamientoGroup.style.display = mostrar ? 'block' : 'none';
+        modoLicenciamientoInput.required = mostrar;
+
+        if (!mostrar) {
+            modoLicenciamientoInput.value = '';
+        }
+    }
+
+    function toggleFrecuenciaOtro() {
+        if (!frecuenciaSelect || !frecuenciaOtroGroup || !frecuenciaOtroInput) {
+            return;
+        }
+
+        const mostrar = frecuenciaSelect.value === 'Otro';
+        frecuenciaOtroGroup.style.display = mostrar ? 'block' : 'none';
+        frecuenciaOtroInput.required = mostrar;
+
+        if (!mostrar) {
+            frecuenciaOtroInput.value = '';
+        }
+    }
+
+    function toggleVigencia() {
+        if (!conocimientoVigenciaSelect || !vigenciaGroup || !vigenciaInput) {
+            return;
+        }
+
+        const mostrar = conocimientoVigenciaSelect.value === 'Si';
+        vigenciaGroup.style.display = mostrar ? 'block' : 'none';
+        vigenciaInput.required = mostrar;
+
+        if (!mostrar) {
+            vigenciaInput.value = '';
+        }
+    }
+
+    if (tipoHerramientaSelect) {
+        tipoHerramientaSelect.addEventListener('change', toggleHerramientaDetalle);
+        toggleHerramientaDetalle();
+    }
+    if (licenciamientoSelect) {
+        licenciamientoSelect.addEventListener('change', toggleModoLicenciamiento);
+        toggleModoLicenciamiento();
+    }
+    if (frecuenciaSelect) {
+        frecuenciaSelect.addEventListener('change', toggleFrecuenciaOtro);
+        toggleFrecuenciaOtro();
+    }
+    if (conocimientoVigenciaSelect) {
+        conocimientoVigenciaSelect.addEventListener('change', toggleVigencia);
+        toggleVigencia();
+    }
+</script>
+
+</body>
+</html>

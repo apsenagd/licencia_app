@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista global por áreas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="vista-global-card">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div>
+                <h2 class="mb-1">Licencias/Herramientas por Área</h2>
+                <p class="text-muted mb-0">Revisa todas las solicitudes de licencias / herramientas agrupadas por área.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/exportar_licencias" class="btn btn-info btn-lg" title="Descargar todos los datos en Excel">
+                    📊 Exportar Excel
+                </a>
+                <a href="/" class="btn btn-success btn-lg">Agregar solicitud</a>
+            </div>
+        </div>
+
+        {% for area, items in grouped.items() %}
+            <div class="mb-5 area-section p-4 rounded-4 shadow-sm bg-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="area-title mb-0">{{ area }}</h4>
+                    <span class="badge-custom">{{ items|length }} licencia{{ 's' if items|length != 1 else '' }}</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th>Licencia</th>
+                                <th>Descripción</th>
+                                <th>Fecha solicitud</th>
+                                <th>Vigencia</th>
+                                <th>Solicitante</th>
+                                <th>Encargado</th>
+                                <th class="text-center">Detalle</th>
+                                <th class="text-center">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set area_id = 'area-' ~ loop.index0 %}
+                            {% for it in items %}
+                            <tr data-area="{{ area_id }}" class="{% if loop.index0 >= 3 %}extra-row d-none{% endif %}">
+                                <td class="fw-semibold">{{ it.nombre_licencia }}</td>
+                                <td>{{ it.descripcion }}</td>
+                                <td>{{ it.fecha_solicitud }}</td>
+                                <td>{% if it.fecha_vencimiento %}{{ it.fecha_vencimiento }}{% else %}NO{% endif %}</td>
+                                <td>{{ it.solicitante }}</td>
+                                <td>{{ it.encargado }}</td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('detalle', id=it.id_licencia, next='global') }}" class="btn btn-primary btn-sm btn-icon">🔍</a>
+                                </td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" data-id="{{ it.id_licencia }}" data-nombre="{{ it.nombre_licencia }}" title="Eliminar licencia">🗑️</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if items|length > 3 %}
+                <div class="mt-3 d-flex justify-content-end">
+                    <button class="btn btn-outline-success btn-sm ver-mas-btn" data-area="{{ area_id }}" data-expanded="false">Ver más</button>
+                </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="py-4 text-center">
+                <p class="mb-0 text-secondary">No hay licencias registradas todavía.</p>
+            </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<script>
+document.addEventListener('click', function(e) {
+    if (e.target.matches('.ver-mas-btn')) {
+        const btn = e.target;
+        const area = btn.getAttribute('data-area');
+        const expanded = btn.getAttribute('data-expanded') === 'true';
+        const rows = Array.from(document.querySelectorAll('tr[data-area="' + area + '"]'));
+        if (!expanded) {
+            rows.forEach(r => r.classList.remove('d-none'));
+            btn.textContent = 'Ver menos';
+            btn.setAttribute('data-expanded', 'true');
+        } else {
+            rows.forEach((r, i) => { if (i >= 3) r.classList.add('d-none'); });
+            btn.textContent = 'Ver más';
+            btn.setAttribute('data-expanded', 'false');
+            const areaRow = rows[0];
+            if (areaRow) areaRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    } else if (e.target.matches('.delete-btn')) {
+        const btn = e.target;
+        const id = btn.getAttribute('data-id');
+        const nombre = btn.getAttribute('data-nombre');
+        const confirmed = confirm(`¿Estás seguro de que deseas eliminar "${nombre}"?\n\nEsta acción no se puede deshacer.`);
+        if (confirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/licencia/${id}/eliminar`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+});
+</script>
+
+</body>
+</html>

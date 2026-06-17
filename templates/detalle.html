@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Licencia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+    <div class="vista-global-card">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div>
+                <h2 class="mb-1">Detalle Completo de Licencia</h2>
+                <p class="subtitulo mb-0">Haz clic en cualquier valor para editarlo directamente.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ return_url }}" class="btn btn-secondary">Volver</a>
+                
+            </div>
+        </div>
+
+        <div class="row gx-4 gy-3 mb-4">
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Fecha solicitud</div>
+                    <div class="detail-value" data-field="fecha_solicitud">{{ d.fecha_solicitud }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Área</div>
+                    <div class="detail-value" data-field="area_departamento">{{ d.area_departamento }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Encargado</div>
+                    <div class="detail-value" data-field="jefe_area">{{ d.jefe_area }}</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Solicitante</div>
+                    <div class="detail-value" data-field="solicitante">{{ d.solicitante }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider mb-4"></div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">Datos de licencia</h5>
+            <div class="row gx-4 gy-3">
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Licencia/Herramienta</div><div class="detail-value" data-field="nombre_licencia">{{ d.nombre_licencia }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Vigencia licencia</div><div class="detail-value" data-field="fecha_vencimiento">{% if d.fecha_vencimiento %}{{ d.fecha_vencimiento }}{% else %}NO{% endif %}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Tipo de licencia/herramienta</div><div class="detail-value" data-field="tipo_herramienta">{{ d.tipo_herramienta }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Frecuencia de uso</div><div class="detail-value" data-field="frecuencia_uso">{{ d.frecuencia_uso }}</div></div>
+                </div>
+                <div class="col-md-12">
+                    <div class="detail-item"><div class="detail-label">Descripción</div><div class="detail-value" data-field="descripcion">{{ d.descripcion }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Licenciamiento</div><div class="detail-value" data-field="licenciamiento">{{ d.licenciamiento }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Proveedor</div><div class="detail-value" data-field="proveedor">{{ d.proveedor }}</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider mb-4"></div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">Información adicional</h5>
+            <div class="row gx-4 gy-3">
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Cantidad de usuarios</div><div class="detail-value" data-field="cantidad_usuarios">{{ d.cantidad_usuarios }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Roles</div><div class="detail-value" data-field="maneja_roles">{{ d.maneja_roles }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Encargado Gestor Roles</div><div class="detail-value" data-field="gestor_roles" data-conditional-parent="maneja_roles">{{ d.gestor_roles }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Encargado Gestor Usuarios</div><div class="detail-value" data-field="gestor_usuarios" data-conditional-parent="maneja_roles">{{ d.gestor_usuarios }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Maneja o recopila datos personales</div><div class="detail-value" data-field="maneja_info_sensible">{{ d.maneja_info_sensible }}</div></div>
+                </div>
+                {% if d.maneja_info_sensible|lower == 'si' %}
+                <div class="col-md-12">
+                    <div class="detail-item">
+                        <div class="detail-label">Tipo de datos personales</div>
+                        <div class="detail-value" data-field="tipo_info_sensible">
+                            {% set tipos = d.tipo_info_sensible.split(', ') if d.tipo_info_sensible else [] %}
+                            {% if tipos %}
+                                <ul style="margin: 0; padding-left: 20px;">
+                                    {% for tipo in tipos %}
+                                        <li>{{ tipo }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ d.tipo_info_sensible }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Validación compliance</div><div class="detail-value" data-field="validacion_compliance">{{ d.validacion_compliance }}</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-divider mb-4"></div>
+
+        <div class="mb-4">
+            <h5 class="mb-3">Copias y contingencia</h5>
+            <div class="row gx-4 gy-3">
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Copias seguridad</div><div class="detail-value" data-field="realiza_copias">{{ d.realiza_copias }}</div></div>
+                </div>
+                {% if d.realiza_copias|lower == 'si' %}
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Tipo de copias</div><div class="detail-value" data-field="tipo_copia">{{ d.tipo_copia }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Frecuencia copias</div><div class="detail-value" data-field="frecuencia_copia">{{ d.frecuencia_copia }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Ubicación copia</div><div class="detail-value" data-field="ubicacion_copia">{{ d.ubicacion_copia }}</div></div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Integraciones</div><div class="detail-value" data-field="tiene_integraciones">{{ d.tiene_integraciones }}</div></div>
+                </div>
+                {% if d.tiene_integraciones|lower == 'si' %}
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Detalle integración</div><div class="detail-value" data-field="detalle_integraciones">{{ d.detalle_integraciones }}</div></div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Impacto</div><div class="detail-value" data-field="impacto_falla">{{ d.impacto_falla }}</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-item"><div class="detail-label">Procesos relacionados</div><div class="detail-value" data-field="procesos_relacionados">{{ d.procesos_relacionados }}</div></div>
+                </div>
+                <div class="col-md-12">
+                    <div class="detail-item"><div class="detail-label">Contacto proveedor</div><div class="detail-value" data-field="contacto_proveedor">{{ d.contacto_proveedor }}</div></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const fieldMapping = {
+        'Fecha solicitud': 'fecha_solicitud',
+        'Área': 'area_departamento',
+        'Encargado': 'jefe_area',
+        'Solicitante': 'solicitante',
+        'Licencia/Herramienta': 'nombre_licencia',
+        'Vigencia': 'fecha_vencimiento',
+        'Tipo': 'tipo_herramienta',
+        'Frecuencia de uso': 'frecuencia_uso',
+        'Descripción': 'descripcion',
+        'Licenciamiento': 'licenciamiento',
+        'Proveedor': 'proveedor',
+        'Cantidad de usuarios': 'cantidad_usuarios',
+        'Roles': 'maneja_roles',
+        'Encargado Gestor Roles': 'gestor_roles',
+        'Encargado Gestor Usuarios': 'gestor_usuarios',
+        'Maneja o recopila datos personales': 'maneja_info_sensible',
+        'Tipo de datos personales': 'tipo_info_sensible',
+        'Validación compliance': 'validacion_compliance',
+        'Copias seguridad': 'realiza_copias',
+        'Tipo de copias': 'tipo_copia',
+        'Frecuencia copias': 'frecuencia_copia',
+        'Ubicación copia': 'ubicacion_copia',
+        'Integraciones': 'tiene_integraciones',
+        'Detalle integración': 'detalle_integraciones',
+        'Impacto': 'impacto_falla',
+        'Procesos relacionados': 'procesos_relacionados',
+        'Contacto proveedor': 'contacto_proveedor'
+    };
+    
+    const readOnlyFields = ['Fecha solicitud', 'Área', 'Encargado', 'Solicitante'];
+
+    const multiSelectFieldNames = ['tipo_info_sensible'];
+    const multiSelectOptionsByField = {
+        'tipo_info_sensible': ['Datos personales (clientes)', 'Datos personales (empleados)', 'Información financiera', 'Información comercial/estratégica', 'Propiedad intelectual', 'Datos de proveedores', 'Información médica/salud']
+    };
+
+    const selectFieldNames = ['tipo_herramienta','frecuencia_uso','licenciamiento','maneja_roles','maneja_info_sensible','validacion_compliance','realiza_copias','tiene_integraciones','impacto_falla'];
+
+    const selectOptionsByField = {
+        'tipo_herramienta': ['Aplicativo web', 'Software solo en mi computador', 'Bases de datos', 'Software de la empresa', 'Otro'],
+        'frecuencia_uso': ['En todo momento', 'Diario', 'Semanal', 'Mensual', 'Trimestral', 'Semestral', 'Anual', 'Otro'],
+        'licenciamiento': ['Propio', 'Licenciado', 'Gratuito', 'Desarrollo Interno', 'Otro'],
+        'maneja_roles': ['Si', 'No', 'No sé'],
+        'maneja_info_sensible': ['Si', 'No', 'No sé'],
+        'validacion_compliance': ['Si', 'No', 'No sé'],
+        'realiza_copias': ['Si', 'No', 'No sé'],
+        'tiene_integraciones': ['Si', 'No', 'No sé'],
+        'impacto_falla': ['Alta - Paraliza operación', 'Media - Afecta parcialmente', 'Baja - Impacto menor', 'No crítico']
+    };
+
+    const otherInputLabelsByField = {
+        'tipo_herramienta': 'Describe el tipo de herramienta',
+        'frecuencia_uso': 'Describe la frecuencia de uso',
+        'licenciamiento': 'Describe el tipo de licenciamiento'
+    };
+
+    document.querySelectorAll('.detail-value').forEach(valueEl => {
+        valueEl.addEventListener('click', function(e) {
+            // Verificar si este campo tiene un padre condicional
+            const conditionalParent = this.dataset.conditionalParent;
+            if (conditionalParent) {
+                const parentField = document.querySelector(`[data-field="${conditionalParent}"]`);
+                if (parentField) {
+                    const parentValue = parentField.textContent.trim().toLowerCase();
+                    if (parentValue !== 'si') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+                }
+            }
+
+            if (this.classList.contains('editable')) return; // Ya está en modo edición
+            
+            const detailItem = this.closest('.detail-item');
+            const label = detailItem.querySelector('.detail-label').textContent.trim();
+            const dataField = this.dataset.field;
+            const fieldName = dataField || fieldMapping[label];
+            const originalValue = this.textContent.trim();
+            
+            if (!fieldName || readOnlyFields.includes(label)) return; // No es editable
+            
+            this.classList.add('editable');
+            
+            let inputHTML;
+            
+            // Si es un campo múltiple (por nombre de campo)
+            if (multiSelectFieldNames.includes(fieldName)) {
+                const options = multiSelectOptionsByField[fieldName] || [];
+                const selectedValues = originalValue.split(', ').map(v => v.trim());
+                const optionsHTML = options.map(opt => 
+                    `<option value="${opt}" ${selectedValues.includes(opt) ? 'selected' : ''}>${opt}</option>`
+                ).join('');
+                inputHTML = `<select class="form-control form-control-sm" multiple style="padding: 4px 8px; font-size: 0.95rem; min-height: 120px;">${optionsHTML}</select>`;
+            } else if (selectFieldNames.includes(fieldName)) {
+                const options = selectOptionsByField[fieldName] || [];
+                const values = originalValue ? originalValue.split(',').map(v => v.trim()) : [];
+                let optionsHTML = options.map(opt => 
+                    `<option value="${opt}" ${values.includes(opt) ? 'selected' : ''}>${opt}</option>`
+                ).join('');
+                if (originalValue && !values.every(val => options.includes(val))) {
+                    optionsHTML += `<option value="${originalValue}" selected>${originalValue}</option>`;
+                }
+                const otherInput = otherInputLabelsByField[fieldName] ? `<input type="text" class="form-control form-control-sm other-input" placeholder="${otherInputLabelsByField[fieldName]}" value="${options.includes(originalValue) ? '' : originalValue}" style="margin-top: 8px; display: ${values.includes('Otro') || (originalValue && !options.includes(originalValue)) ? 'block' : 'none'}; padding: 4px 8px; font-size: 0.95rem;">` : '';
+                inputHTML = `<div class="detail-edit-select"><select class="form-control form-control-sm" style="padding: 4px 8px; font-size: 0.95rem;">${optionsHTML}</select>${otherInput}</div>`;
+            } else if (label.includes('Vigencia')) {
+                inputHTML = `<input type="date" class="form-control form-control-sm" value="${originalValue}" style="padding: 4px 8px; font-size: 0.95rem;">`;
+            } else if (label.includes('Cantidad') || label.includes('usuarios')) {
+                inputHTML = `<input type="number" class="form-control form-control-sm" value="${originalValue}" style="padding: 4px 8px; font-size: 0.95rem;">`;
+            } else {
+                inputHTML = `<input type="text" class="form-control form-control-sm" value="${originalValue}" style="padding: 4px 8px; font-size: 0.95rem;">`;
+            }
+            
+            this.innerHTML = inputHTML;
+            const inputControl = this.querySelector('select, input');
+            const otherInput = this.querySelector('input.other-input');
+            const buttons = document.createElement('div');
+            buttons.style.marginTop = '8px';
+            buttons.innerHTML = `
+                <button type="button" class="btn btn-sm btn-primary me-2 save-btn">Guardar</button>
+                <button type="button" class="btn btn-sm btn-secondary cancel-btn">Cancelar</button>
+            `;
+            this.appendChild(buttons);
+
+            const saveChange = () => {
+                let newValue;
+                const selectEl = valueEl.querySelector('select');
+                const otherInputLocal = valueEl.querySelector('input.other-input');
+                if (selectEl) {
+                    if (selectEl.multiple) {
+                        const selectedOptions = Array.from(selectEl.selectedOptions).map(opt => opt.value);
+                        newValue = selectedOptions.join(', ');
+                    } else {
+                        if (selectEl.value === 'Otro' && otherInputLocal) {
+                            newValue = otherInputLocal.value.trim() || selectEl.value;
+                        } else {
+                            newValue = selectEl.value;
+                        }
+                    }
+                } else {
+                    const textInput = valueEl.querySelector('input:not(.other-input)');
+                    newValue = textInput ? textInput.value.trim() : originalValue;
+                }
+
+                if (newValue === originalValue) {
+                    restoreOriginal();
+                    return;
+                }
+
+                fetch(`/actualizar_licencia/{{ d.id_licencia }}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `${fieldName}=${encodeURIComponent(newValue)}&id_licencia={{ d.id_licencia }}`
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error al guardar');
+                    if (multiSelectFieldNames.includes(fieldName)) {
+                        valueEl.innerHTML = `<ul style="margin: 0; padding-left: 20px;">${newValue.split(', ').map(v => `<li>${v}</li>`).join('')}</ul>`;
+                    } else {
+                        valueEl.textContent = newValue;
+                    }
+                    valueEl.classList.remove('editable');
+                    // Actualizar campos condicionales si cambió el padre
+                    updateConditionalFields();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    restoreOriginal();
+                });
+            };
+
+            const restoreOriginal = () => {
+                if (multiSelectFieldNames.includes(fieldName)) {
+                    valueEl.innerHTML = `<ul style="margin: 0; padding-left: 20px;">${originalValue.split(', ').map(v => `<li>${v}</li>`).join('')}</ul>`;
+                } else {
+                    valueEl.textContent = originalValue;
+                }
+                valueEl.classList.remove('editable');
+            };
+
+            if (inputControl) {
+                if (inputControl.tagName === 'SELECT') {
+                    inputControl.addEventListener('change', function() {
+                        if (this.value === 'Otro' && otherInput) {
+                            otherInput.style.display = 'block';
+                            otherInput.focus();
+                        } else if (otherInput) {
+                            otherInput.style.display = 'none';
+                        }
+                    });
+                }
+                inputControl.focus();
+                if (inputControl.tagName !== 'SELECT' && inputControl.select) {
+                    inputControl.select();
+                }
+            }
+            if (otherInput) {
+                otherInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        saveChange();
+                    }
+                });
+            }
+            buttons.querySelector('.save-btn').addEventListener('click', saveChange);
+            buttons.querySelector('.cancel-btn').addEventListener('click', restoreOriginal);
+        });
+    });
+
+    // Control de campos condicionales
+    const updateConditionalFields = () => {
+        const rolesField = document.querySelector('[data-field="maneja_roles"]');
+        if (!rolesField) return;
+        const rolesValue = rolesField.textContent.trim().toLowerCase();
+        const conditionalFields = document.querySelectorAll('[data-conditional-parent="maneja_roles"]');
+        
+        conditionalFields.forEach(field => {
+            if (rolesValue === 'si') {
+                field.style.opacity = '1';
+                field.style.cursor = 'pointer';
+                field.dataset.editable = 'true';
+            } else {
+                field.style.opacity = '0.5';
+                field.style.cursor = 'not-allowed';
+                field.dataset.editable = 'false';
+            }
+        });
+    };
+
+    // Ejecutar en el cargar la página
+    updateConditionalFields();
+</script>
+
+</body>
+</html>

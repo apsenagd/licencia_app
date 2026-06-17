@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/7c2bac22-1a40-4885-b857-3a2f0521b478/resourceGroups/appsvc_linux_westus2/providers/Microsoft.Web/sites/controldelicenciamientomega",
+    "appService.deploySubpath": "."
+}
