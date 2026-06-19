@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud Completada</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .success-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #44b385 0%, #2f6b63 100%);
+            padding: 20px;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 600px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #59b692 0%, #226b53 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.8s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .success-subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .summary-box {
+            background: #f8f9fa;
+            border-left: 4px solid #165236;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .summary-value {
+            color: #1d462c;
+            font-weight: 700;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary-action {
+            background: linear-gradient(135deg, #133a33 0%, #194e45 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary-action {
+            background: white;
+            color: #254e49;
+            border: 2px solid #2a554a;
+        }
+
+        .btn-secondary-action:hover {
+            background: #215e4b;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        .confirmation-number {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .confirmation-number .label {
+            font-size: 12px;
+            color: #95a5a6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .confirmation-number .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #21614e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="success-container">
+    <div class="success-card">
+        <!-- Icono de Éxito -->
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        <!-- Título y Subtítulo -->
+        <h1 class="success-title">¡Solicitud Completada!</h1>
+        <p class="success-subtitle">
+            Gracias por completar el registro de licencias y herramientas. Tu solicitud ha sido procesada correctamente y será revisada por nuestro equipo.
+        </p>
+
+
+        <!-- Resumen de la Solicitud -->
+        <div class="summary-box">
+            <div class="summary-item">
+                <span class="summary-label">Solicitante:</span>
+                <span class="summary-value">{{ solicitud.solicitante }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Área / Departamento:</span>
+                <span class="summary-value">{{ solicitud.area_departamento }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Encargado:</span>
+                <span class="summary-value">{{ solicitud.jefe_area }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Total de Licencias Registradas:</span>
+                <span class="summary-value">{{ total_licencias }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Fecha de Solicitud:</span>
+                <span class="summary-value">
+                    {% if solicitud.fecha_solicitud %}
+                        {{ solicitud.fecha_solicitud.strftime('%d/%m/%Y %H:%M') if solicitud.fecha_solicitud.strftime else solicitud.fecha_solicitud }}
+                    {% else %}
+                        Hoy
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Pie de página -->
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ecf0f1;">
+            <p style="color: #95a5a6; font-size: 12px;">
+                Sistema de Gestión de Licencias y Herramientas
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

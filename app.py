@@ -12,11 +12,6 @@ app = Flask(__name__)
 
 def obtener_conexion():
 
-    
-    print("HOST:", os.getenv("DB_HOST"))
-    print("USER:", os.getenv("DB_USER"))
-    print("DB:", os.getenv("DB_NAME"))
-    print("PORT:", os.getenv("DB_PORT"))
 
     return mysql.connector.connect(
     host=os.getenv("DB_HOST"),
