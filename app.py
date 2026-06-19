@@ -9,7 +9,16 @@ import os
 app = Flask(__name__)
 
 # CONEXIÓN MYSQL
-conexion = mysql.connector.connect(
+
+def obtener_conexion():
+
+    
+    print("HOST:", os.getenv("DB_HOST"))
+    print("USER:", os.getenv("DB_USER"))
+    print("DB:", os.getenv("DB_NAME"))
+    print("PORT:", os.getenv("DB_PORT"))
+
+    return mysql.connector.connect(
     host=os.getenv("DB_HOST"),
     user=os.getenv("DB_USER"),
     password=os.getenv("DB_PASSWORD"),
@@ -17,6 +26,20 @@ conexion = mysql.connector.connect(
     port=int(os.getenv("DB_PORT", 3306))
 
 )
+
+# CERRAR CONEXIONES
+def cerrar_conexion(cursor, conexion):
+    try:
+        if cursor:
+            cursor.close()
+    except:
+        pass
+
+    try:
+        if conexion and conexion.is_connected():
+            conexion.close()
+    except:
+        pass
 
 # ---------------------------
 # FORMULARIO 1
@@ -44,6 +67,7 @@ def formulario_licencia():
         except ValueError:
             fecha_solicitud = fecha_hora
 
+    conexion = obtener_conexion()
     cursor = conexion.cursor()
     sql = '''
     INSERT INTO solicitudes (jefe_area, area_departamento, solicitante, fecha_solicitud)
@@ -52,6 +76,8 @@ def formulario_licencia():
     cursor.execute(sql, (encargado, area, solicitante, fecha_solicitud))
     conexion.commit()
     id_solicitud = cursor.lastrowid
+
+    cerrar_conexion(cursor, conexion)
 
     return render_template(
         'formulario_licencia.html',
@@ -139,6 +165,7 @@ def guardar():
     procesos = request.form.get('procesos_apoyo')
     contacto = request.form.get('contacto_proveedor')
 
+    conexion = obtener_conexion()
     cursor = conexion.cursor()
     id_solicitud = request.form.get('id_solicitud')
     if id_solicitud:
@@ -239,6 +266,7 @@ def guardar():
     ))
 
     conexion.commit()
+    cerrar_conexion(cursor, conexion)
 
     return redirect(f'/solicitud/{id_solicitud}/resumen')
 
@@ -249,6 +277,7 @@ def guardar():
 @app.route('/vista')
 def vista():
 
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
     cursor.execute('''
@@ -269,11 +298,15 @@ def vista():
 
     datos = cursor.fetchall()
 
+    cerrar_conexion(cursor, conexion)
+
     return render_template('vista_licencias.html', licencias=datos)
 
 
 @app.route('/solicitud/<int:id_solicitud>/licencia/nueva')
 def nueva_licencia(id_solicitud):
+    
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('''
         SELECT jefe_area, area_departamento, solicitante, fecha_solicitud
@@ -281,6 +314,8 @@ def nueva_licencia(id_solicitud):
         WHERE id_solicitud = %s
     ''', (id_solicitud,))
     solicitud = cursor.fetchone()
+
+    cerrar_conexion(cursor, conexion)
     if not solicitud:
         return redirect('/')
 
@@ -296,6 +331,7 @@ def nueva_licencia(id_solicitud):
 
 @app.route('/solicitud/<int:id_solicitud>/resumen')
 def solicitud_resumen(id_solicitud):
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('''
         SELECT id_solicitud, jefe_area, area_departamento, solicitante, fecha_solicitud
@@ -313,18 +349,40 @@ def solicitud_resumen(id_solicitud):
     ''', (id_solicitud,))
     licencias = cursor.fetchall()
 
+    cerrar_conexion(cursor, conexion)
+
     return render_template('solicitud_resumen.html', solicitud=solicitud, licencias=licencias)
 
 
-@app.route('/solicitud/<int:id_solicitud>/finalizar')
-def finalizar_solicitud(id_solicitud):
-    # Aquí puedes agregar lógica para cambiar el estado de la solicitud si tienes un campo de estado.
-    # Por ahora solo redirige a la lista de solicitudes después de finalizar.
-    return redirect('/vista_global')
+@app.route('/solicitud/<int:id_solicitud>/finalizado')
+def finalizado_solicitud(id_solicitud):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor(dictionary=True)
+    cursor.execute('''
+        SELECT id_solicitud, jefe_area, area_departamento, solicitante, fecha_solicitud
+        FROM solicitudes
+        WHERE id_solicitud = %s
+    ''', (id_solicitud,))
+    solicitud = cursor.fetchone()
+    if not solicitud:
+        return redirect('/')
+    
+    cursor.execute('''
+        SELECT COUNT(*) as total_licencias
+        FROM licencias
+        WHERE id_solicitud = %s
+    ''', (id_solicitud,))
+    result = cursor.fetchone()
+    total_licencias = result['total_licencias'] if result else 0
+
+    cerrar_conexion(cursor, conexion)
+    
+    return render_template('final.html', solicitud=solicitud, total_licencias=total_licencias)
 
 
 @app.route('/solicitudes')
 def solicitudes():
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('''
         SELECT
@@ -341,6 +399,8 @@ def solicitudes():
     ''')
     datos = cursor.fetchall()
 
+    cerrar_conexion(cursor, conexion)
+
     return render_template('solicitudes.html', solicitudes=datos)
 
 
@@ -349,6 +409,8 @@ def solicitudes():
 
 @app.route('/vista_global')
 def vista_global():
+
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('''
         SELECT
@@ -366,6 +428,8 @@ def vista_global():
     ''')
     rows = cursor.fetchall()
 
+    cerrar_conexion(cursor, conexion)
+
     grouped = {}
     for r in rows:
         area = r.get('area') or 'Sin área'
@@ -375,6 +439,7 @@ def vista_global():
 
 @app.route('/exportar_licencias')
 def exportar_licencias():
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('''
         SELECT
@@ -414,6 +479,7 @@ def exportar_licencias():
         ORDER BY s.area_departamento, l.nombre_licencia
     ''')
     rows = cursor.fetchall()
+    cerrar_conexion(cursor, conexion)
 
     # Crear workbook
     wb = Workbook()
@@ -538,7 +604,9 @@ def exportar_licencias():
 @app.route('/licencia/<int:id>/eliminar', methods=['POST'])
 def eliminar_licencia(id):
     next_view = request.form.get('next', 'global')
+    
 
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
     cursor.execute('SELECT id_solicitud FROM licencias WHERE id_licencia = %s', (id,))
     row = cursor.fetchone()
@@ -548,6 +616,7 @@ def eliminar_licencia(id):
     cursor.execute('DELETE FROM copias_seguridad WHERE id_licencia = %s', (id,))
     cursor.execute('DELETE FROM licencias WHERE id_licencia = %s', (id,))
     conexion.commit()
+    cerrar_conexion(cursor, conexion)
 
     if next_view == 'resumen' and solicitud_id:
         return redirect(f'/solicitud/{solicitud_id}/resumen')
@@ -561,7 +630,7 @@ def eliminar_licencia(id):
 
 @app.route('/detalle/<int:id>')
 def detalle(id):
-
+    conexion = obtener_conexion()
     cursor = conexion.cursor(dictionary=True)
 
     cursor.execute('''
@@ -608,6 +677,7 @@ def detalle(id):
     ''', (id,))
 
     detalle = cursor.fetchone()
+    cerrar_conexion(cursor, conexion)
 
     next_view = request.args.get('next')
     if next_view == 'resumen' and detalle:
@@ -626,6 +696,7 @@ def detalle(id):
 # ---------------------------
 @app.route('/actualizar_licencia/<int:id>', methods=['POST'])
 def actualizar_licencia(id):
+    conexion = obtener_conexion()
     cursor = conexion.cursor()
     
     # Obtener los datos del formulario
@@ -661,7 +732,7 @@ def actualizar_licencia(id):
         cursor.execute(sql_cop, values)
     
     conexion.commit()
-    cursor.close()
+    cerrar_conexion(cursor, conexion)
     
     # Devolver JSON para fetch
     return jsonify({'success': True, 'message': 'Actualizado correctamente'})
