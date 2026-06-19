@@ -117,3 +117,11 @@ body {
 .extra-row {
     transition: all 0.2s ease-in-out;
 }
+
+/* Print styles: hide controls and optimize layout for PDF */
+@media print {
+    .no-print { display: none !important; }
+    body { background: #fff !important; color: #000 !important; }
+    .area-section { page-break-inside: avoid; }
+    .table-custom { font-size: 12px; }
+}
