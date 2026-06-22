@@ -36,19 +36,6 @@
 
         <form action="{{ url_for('formulario_licencia') }}" method="POST">
 
-            <!-- ENCARGADO -->
-            <div class="mb-3">
-                <label class="form-label">
-                    Nombre del jefe encargado del área
-                </label>
-
-                <input
-                    type="text"
-                    name="encargado"
-                    class="form-control custom-input"
-                    required
-                >
-            </div>
 
             <!-- FECHA Y HORA -->
             <div class="mb-3">
@@ -112,6 +99,22 @@
                 >
             </div>
 
+            <!-- ENCARGADO -->
+            <div class="mb-3">
+                <label class="form-label">
+                    Nombre del jefe encargado del área
+                </label>
+
+                <input
+                    type="text"
+                    name="encargado"
+                    class="form-control custom-input"
+                    required
+                >
+            </div>
+
+            
+
             <!-- SOLICITANTE -->
             <div class="mb-4">
                 <label class="form-label">
@@ -158,7 +161,16 @@
             return;
         }
 
-        const shouldShow = areaSelect.value === 'Administración y Finanzas';
+        const subareaAreas = [
+            'Primary Care',
+            'Consumer care',
+            'Comercial',
+            'Investigación y desarrollo',
+            'Institucional',
+            'Administración y Finanzas'
+        ];
+
+        const shouldShow = subareaAreas.includes(areaSelect.value);
         subareaGroup.style.display = shouldShow ? 'block' : 'none';
         subareaInput.required = shouldShow;
 
