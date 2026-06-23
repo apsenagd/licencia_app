@@ -167,12 +167,13 @@ def guardar():
 
     copias = request.form.get('copias_seguridad')
     tipo_copias = request.form.get('tipo_copias')
-    frecuencia_copias = request.form.get('frecuencia_copias')
-    frecuencia_copias_otro = request.form.get('frecuencia_copias_otro')
+    # Intentar leer la frecuencia de copias desde varios orígenes posibles
+    frecuencia_copias = request.form.get('frecuencia_copias') or request.form.get('frecuencia') or request.form.get('frecuencia_otro')
+    frecuencia_copias_otro = request.form.get('frecuencia_copias_otro') or request.form.get('frecuencia_otro')
     # Si frecuencia_copias es "Otro" y hay detalle, usa el detalle
-    if frecuencia_copias == 'Otro' and frecuencia_copias_otro:
+    if (not frecuencia_copias or frecuencia_copias == 'Otro') and frecuencia_copias_otro:
         frecuencia_copias = frecuencia_copias_otro
-    
+
     ubicacion = request.form.get('ubicacion_copias')
     integraciones = request.form.get('integracion_sistemas')
     detalle_integracion = request.form.get('sistemas_integracion')
