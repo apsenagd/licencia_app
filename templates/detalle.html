@@ -57,10 +57,10 @@
             <h5 class="mb-3">Datos de licencia</h5>
             <div class="row gx-4 gy-3">
                 <div class="col-md-6">
-                    <div class="detail-item"><div class="detail-label">Licencia/Herramienta</div><div class="detail-value" data-field="nombre_licencia">{{ d.nombre_licencia }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Nombre de la Licencia/Herramienta</div><div class="detail-value" data-field="nombre_licencia">{{ d.nombre_licencia }}</div></div>
                 </div>
                 <div class="col-md-6">
-                    <div class="detail-item"><div class="detail-label">Vigencia licencia</div><div class="detail-value" data-field="fecha_vencimiento">{% if d.fecha_vencimiento %}{{ d.fecha_vencimiento }}{% else %}NO{% endif %}</div></div>
+                    <div class="detail-item"><div class="detail-label">Fecha de Vigencia de la Licencia</div><div class="detail-value" data-field="fecha_vencimiento">{% if d.fecha_vencimiento %}{{ d.fecha_vencimiento }}{% else %}NO{% endif %}</div></div>
                 </div>
                 <div class="col-md-6">
                     <div class="detail-item"><div class="detail-label">Tipo de licencia/herramienta</div><div class="detail-value" data-field="tipo_herramienta">{{ d.tipo_herramienta }}</div></div>
@@ -72,7 +72,7 @@
                     <div class="detail-item"><div class="detail-label">Descripción</div><div class="detail-value" data-field="descripcion">{{ d.descripcion }}</div></div>
                 </div>
                 <div class="col-md-6">
-                    <div class="detail-item"><div class="detail-label">Licenciamiento</div><div class="detail-value" data-field="licenciamiento">{{ d.licenciamiento }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Modo de Licenciamiento</div><div class="detail-value" data-field="licenciamiento">{{ d.licenciamiento }}</div></div>
                 </div>
                 <div class="col-md-6">
                     <div class="detail-item"><div class="detail-label">Proveedor</div><div class="detail-value" data-field="proveedor">{{ d.proveedor }}</div></div>
@@ -89,7 +89,7 @@
                     <div class="detail-item"><div class="detail-label">Cantidad de usuarios</div><div class="detail-value" data-field="cantidad_usuarios">{{ d.cantidad_usuarios }}</div></div>
                 </div>
                 <div class="col-md-6">
-                    <div class="detail-item"><div class="detail-label">Roles</div><div class="detail-value" data-field="maneja_roles">{{ d.maneja_roles }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Manejo de Roles</div><div class="detail-value" data-field="maneja_roles">{{ d.maneja_roles }}</div></div>
                 </div>
                 <div class="col-md-6">
                     <div class="detail-item"><div class="detail-label">Encargado Gestor Roles</div><div class="detail-value" data-field="gestor_roles" data-conditional-parent="maneja_roles">{{ d.gestor_roles }}</div></div>
@@ -103,7 +103,7 @@
                 {% if d.maneja_info_sensible|lower == 'si' %}
                 <div class="col-md-12">
                     <div class="detail-item">
-                        <div class="detail-label">Tipo de datos personales</div>
+                        <div class="detail-label">Tipo de datos personales que maneja o recopila</div>
                         <div class="detail-value" data-field="tipo_info_sensible">
                             {% set tipos = d.tipo_info_sensible.split(', ') if d.tipo_info_sensible else [] %}
                             {% if tipos %}
@@ -131,7 +131,7 @@
             <h5 class="mb-3">Copias y contingencia</h5>
             <div class="row gx-4 gy-3">
                 <div class="col-md-6">
-                    <div class="detail-item"><div class="detail-label">Copias seguridad</div><div class="detail-value" data-field="realiza_copias">{{ d.realiza_copias }}</div></div>
+                    <div class="detail-item"><div class="detail-label">Realiza copias de seguridad</div><div class="detail-value" data-field="realiza_copias">{{ d.realiza_copias }}</div></div>
                 </div>
                 {% if d.realiza_copias|lower == 'si' %}
                 <div class="col-md-6">
