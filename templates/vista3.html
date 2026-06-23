@@ -43,6 +43,7 @@
             <input type="hidden" name="tipo_info_sensible" value="{{ tipo_info_sensible }}">
             <input type="hidden" name="info_sensible_otro" value="{{ info_sensible_otro }}">
             <input type="hidden" name="compliance_validado" value="{{ compliance_validado }}">
+            <input type="hidden" name="frecuencia_copias_otro" value="{{ frecuencia_copias_otro }}">
 
             <div class="mb-3">
                 <label class="form-label">¿Sabes si la herramienta realiza copias de seguridad de la información?</label>
@@ -63,7 +64,7 @@
 
             <div class="mb-3">
                 <label class="form-label">¿Con qué frecuencia se generan las copias de seguridad?</label>
-                    <select id="frecuencia_copias" name="frecuencia" class="form-select custom-input" required>
+                    <select id="frecuencia_copias" name="frecuencia_copias" class="form-select custom-input" required>
                         <option value="" disabled selected>Selecciona una frecuencia</option>
                         <option value="En todo momento">En todo momento</option>
                         <option value="Diario">Diario</option>
@@ -134,6 +135,8 @@
     const copiasDetalleGroup = document.getElementById('copias_detalle_group');
     const tipoCopiasInput = document.getElementById('tipo_copias');
     const frecuenciaCopiasInput = document.getElementById('frecuencia_copias');
+    const frecuenciaCopiasOtroGroup = document.getElementById('frecuencia_copias_otro_group');
+    const frecuenciaCopiasOtroInput = document.getElementById('frecuencia_copias_otro_input');
     const ubicacionCopiasInput = document.getElementById('ubicacion_copias');
     const frecuenciaSelect = document.getElementById('frecuencia_copias');
 
@@ -151,6 +154,17 @@
             tipoCopiasInput.value = '';
             frecuenciaSelect.value = '';
             ubicacionCopiasInput.value = '';
+            frecuenciaCopiasOtroInput.value = '';
+            frecuenciaCopiasOtroGroup.style.display = 'none';
+        }
+    }
+
+    function toggleFrecuenciaCopiasOtro() {
+        const show = frecuenciaSelect.value === 'Otro';
+        frecuenciaCopiasOtroGroup.style.display = show ? 'block' : 'none';
+        frecuenciaCopiasOtroInput.required = show;
+        if (!show) {
+            frecuenciaCopiasOtroInput.value = '';
         }
     }
 
@@ -166,6 +180,11 @@
     if (copiasSelect) {
         copiasSelect.addEventListener('change', toggleCopiasDetalle);
         toggleCopiasDetalle();
+    }
+
+    if (frecuenciaSelect) {
+        frecuenciaSelect.addEventListener('change', toggleFrecuenciaCopiasOtro);
+        toggleFrecuenciaCopiasOtro();
     }
 
     if (integracionSelect) {

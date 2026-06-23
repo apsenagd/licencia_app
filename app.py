@@ -129,9 +129,24 @@ def guardar():
 
     licencia = request.form['licencia']
     tipo_herramienta = request.form.get('tipo_herramienta')
+    herramienta_detalle = request.form.get('herramienta_detalle')
+    # Si tipo_herramienta es "Otro" y hay detalle, usa el detalle
+    if tipo_herramienta == 'Otro' and herramienta_detalle:
+        tipo_herramienta = herramienta_detalle
+    
     licenciamiento = request.form.get('licenciamiento')
+    modo_licenciamiento = request.form.get('modo_licenciamiento')
+    # Si licenciamiento es "Otro" y hay detalle, usa el detalle
+    if licenciamiento == 'Otro' and modo_licenciamiento:
+        licenciamiento = modo_licenciamiento
+    
     proveedor = request.form.get('proveedor')
     frecuencia = request.form.get('frecuencia')
+    frecuencia_otro = request.form.get('frecuencia_otro')
+    # Si frecuencia es "Otro" y hay detalle, usa el detalle
+    if frecuencia == 'Otro' and frecuencia_otro:
+        frecuencia = frecuencia_otro
+    
     vigencia = request.form['vigencia']
     descripcion = request.form.get('uso')
 
@@ -153,6 +168,11 @@ def guardar():
     copias = request.form.get('copias_seguridad')
     tipo_copias = request.form.get('tipo_copias')
     frecuencia_copias = request.form.get('frecuencia_copias')
+    frecuencia_copias_otro = request.form.get('frecuencia_copias_otro')
+    # Si frecuencia_copias es "Otro" y hay detalle, usa el detalle
+    if frecuencia_copias == 'Otro' and frecuencia_copias_otro:
+        frecuencia_copias = frecuencia_copias_otro
+    
     ubicacion = request.form.get('ubicacion_copias')
     integraciones = request.form.get('integracion_sistemas')
     detalle_integracion = request.form.get('sistemas_integracion')
