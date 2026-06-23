@@ -372,9 +372,7 @@ def finalizado_solicitud(id_solicitud):
 
     cerrar_conexion(cursor, conexion)
     
-    # TEMPORALMENTE REDIRIGIENDO A vista_global PARA PRUEBAS
-    # return render_template('final.html', solicitud=solicitud, total_licencias=total_licencias)
-    return redirect('/vista_global')
+    return render_template('final.html', solicitud=solicitud, total_licencias=total_licencias)
 
 
 @app.route('/solicitudes')
