@@ -63,7 +63,7 @@
 
             <div class="mb-3">
                 <label class="form-label">¿Con qué frecuencia se generan las copias de seguridad?</label>
-                    <select id="frecuencia_select" name="frecuencia" class="form-select custom-input" required>
+                    <select id="frecuencia_copias" name="frecuencia" class="form-select custom-input" required>
                         <option value="" disabled selected>Selecciona una frecuencia</option>
                         <option value="En todo momento">En todo momento</option>
                         <option value="Diario">Diario</option>
@@ -80,12 +80,11 @@
                 <label class="form-label">Si elegiste otro, especifica la frecuencia</label>
                 <input type="text" id="frecuencia_otro_input" name="frecuencia_otro" class="form-control custom-input" placeholder="Describe la frecuencia" />
             </div>
-               
+                
                 <div class="mb-3">
                     <label class="form-label">¿Dónde se alojan las copias de seguridad?</label>
                     <input type="text" id="ubicacion_copias" name="ubicacion_copias" class="form-control custom-input" placeholder="Ubicación de las copias de seguridad">
                 </div>
-            </div>
 
             <div class="mb-3">
                 <label class="form-label">¿Sabes si la herramienta se integra con otros sistemas de información internos o externos?</label>
@@ -136,6 +135,7 @@
     const tipoCopiasInput = document.getElementById('tipo_copias');
     const frecuenciaCopiasInput = document.getElementById('frecuencia_copias');
     const ubicacionCopiasInput = document.getElementById('ubicacion_copias');
+    const frecuenciaSelect = document.getElementById('frecuencia_copias');
 
     const integracionSelect = document.getElementById('integracion_select');
     const integracionDetalleGroup = document.getElementById('integracion_detalle_group');
@@ -145,11 +145,11 @@
         const show = copiasSelect.value === 'Si';
         copiasDetalleGroup.style.display = show ? 'block' : 'none';
         tipoCopiasInput.required = show;
-        frecuenciaCopiasInput.required = show;
+        frecuenciaSelect.required = show;
         ubicacionCopiasInput.required = show;
         if (!show) {
             tipoCopiasInput.value = '';
-            frecuenciaCopiasInput.value = '';
+            frecuenciaSelect.value = '';
             ubicacionCopiasInput.value = '';
         }
     }
