@@ -59,10 +59,28 @@
                     <label class="form-label">¿Qué tipo de copias de seguridad maneja?</label>
                     <input type="text" id="tipo_copias" name="tipo_copias" class="form-control custom-input" placeholder="Describe el tipo de copias de seguridad">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">¿Con qué frecuencia se generan las copias de seguridad?</label>
-                    <input type="text" id="frecuencia_copias" name="frecuencia_copias" class="form-control custom-input" placeholder="Frecuencia de copias de seguridad">
-                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">¿Con qué frecuencia se generan las copias de seguridad?</label>
+                    <select id="frecuencia_select" name="frecuencia" class="form-select custom-input" required>
+                        <option value="" disabled selected>Selecciona una frecuencia</option>
+                        <option value="En todo momento">En todo momento</option>
+                        <option value="Diario">Diario</option>
+                        <option value="Semanal">Semanal</option>
+                        <option value="Mensual">Mensual</option>
+                        <option value="Trimestral">Trimestral</option>
+                        <option value="Semestral">Semestral</option>
+                        <option value="Anual">Anual</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+            </div>
+
+            <div class="mb-3" id="frecuencia_otro_group" style="display: none;">
+                <label class="form-label">Si elegiste otro, especifica la frecuencia</label>
+                <input type="text" id="frecuencia_otro_input" name="frecuencia_otro" class="form-control custom-input" placeholder="Describe la frecuencia" />
+            </div>
+               
                 <div class="mb-3">
                     <label class="form-label">¿Dónde se alojan las copias de seguridad?</label>
                     <input type="text" id="ubicacion_copias" name="ubicacion_copias" class="form-control custom-input" placeholder="Ubicación de las copias de seguridad">
