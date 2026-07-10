@@ -1,26 +1,29 @@
 from flask import Flask, render_template, request, redirect, jsonify, send_file
-import mysql.connector
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
 from datetime import datetime
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from io import BytesIO
 import os
 
+load_dotenv()
+
 app = Flask(__name__)
 
-# CONEXIÓN MYSQL
+# CONEXIÓN POSTGRESQL
 
 def obtener_conexion():
-
-
-    return mysql.connector.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    database=os.getenv("DB_NAME"),
-    port=int(os.getenv("DB_PORT", 3306))
-
-)
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT"),
+        sslmode="require"
+        
+    )
 
 # CERRAR CONEXIONES
 def cerrar_conexion(cursor, conexion):
@@ -31,7 +34,7 @@ def cerrar_conexion(cursor, conexion):
         pass
 
     try:
-        if conexion and conexion.is_connected():
+        if conexion:
             conexion.close()
     except:
         pass
@@ -63,15 +66,17 @@ def formulario_licencia():
             fecha_solicitud = fecha_hora
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor()
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     sql = '''
     INSERT INTO solicitudes (jefe_area, area_departamento, solicitante, fecha_solicitud)
     VALUES (%s, %s, %s, %s)
+    RETURNING id_solicitud;
     '''
     cursor.execute(sql, (encargado, area, solicitante, fecha_solicitud))
+    
+    id_solicitud = cursor.fetchone()["id_solicitud"]
+    
     conexion.commit()
-    id_solicitud = cursor.lastrowid
-
     cerrar_conexion(cursor, conexion)
 
     return render_template(
@@ -182,7 +187,7 @@ def guardar():
     contacto = request.form.get('contacto_proveedor')
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor()
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     id_solicitud = request.form.get('id_solicitud')
     if id_solicitud:
         id_solicitud = int(id_solicitud)
@@ -197,9 +202,12 @@ def guardar():
         sql1 = '''
         INSERT INTO solicitudes (jefe_area, area_departamento, solicitante, fecha_solicitud)
         VALUES (%s, %s, %s, %s)
+        RETURNING id_solicitud;
         '''
         cursor.execute(sql1, (encargado, area, solicitante, fecha_solicitud))
-        id_solicitud = cursor.lastrowid
+        id_solicitud = cursor.fetchone()["id_solicitud"]
+
+       
 
     # -------- 2. licencias --------
     sql2 = '''
@@ -214,6 +222,7 @@ def guardar():
         fecha_vencimiento
     )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    RETURNING id_licencia;
     '''
     cursor.execute(sql2, (
         id_solicitud,
@@ -225,7 +234,7 @@ def guardar():
         frecuencia,
         vigencia
     ))
-    id_licencia = cursor.lastrowid
+    id_licencia = cursor.fetchone()["id_licencia"]
 
     # -------- 3. datos adicionales --------
     sql3 = '''
@@ -294,7 +303,7 @@ def guardar():
 def vista():
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute('''
         SELECT 
@@ -323,7 +332,7 @@ def vista():
 def nueva_licencia(id_solicitud):
     
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT jefe_area, area_departamento, solicitante, fecha_solicitud
         FROM solicitudes
@@ -348,13 +357,15 @@ def nueva_licencia(id_solicitud):
 @app.route('/solicitud/<int:id_solicitud>/resumen')
 def solicitud_resumen(id_solicitud):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT id_solicitud, jefe_area, area_departamento, solicitante, fecha_solicitud
         FROM solicitudes
         WHERE id_solicitud = %s
     ''', (id_solicitud,))
     solicitud = cursor.fetchone()
+
+    
     if not solicitud:
         return redirect('/')
 
@@ -364,7 +375,7 @@ def solicitud_resumen(id_solicitud):
         WHERE id_solicitud = %s
     ''', (id_solicitud,))
     licencias = cursor.fetchall()
-
+    
     cerrar_conexion(cursor, conexion)
 
     return render_template('solicitud_resumen.html', solicitud=solicitud, licencias=licencias)
@@ -373,13 +384,16 @@ def solicitud_resumen(id_solicitud):
 @app.route('/solicitud/<int:id_solicitud>/finalizado')
 def finalizado_solicitud(id_solicitud):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT id_solicitud, jefe_area, area_departamento, solicitante, fecha_solicitud
         FROM solicitudes
         WHERE id_solicitud = %s
     ''', (id_solicitud,))
     solicitud = cursor.fetchone()
+
+    
+
     if not solicitud:
         return redirect('/')
     
@@ -390,7 +404,7 @@ def finalizado_solicitud(id_solicitud):
     ''', (id_solicitud,))
     result = cursor.fetchone()
     total_licencias = result['total_licencias'] if result else 0
-
+    
     cerrar_conexion(cursor, conexion)
     
     return render_template('final.html', solicitud=solicitud, total_licencias=total_licencias)
@@ -399,7 +413,7 @@ def finalizado_solicitud(id_solicitud):
 @app.route('/solicitudes')
 def solicitudes():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT
             s.id_solicitud,
@@ -427,7 +441,7 @@ def solicitudes():
 def vista_global():
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT
             s.area_departamento AS area,
@@ -456,7 +470,7 @@ def vista_global():
 @app.route('/exportar_licencias')
 def exportar_licencias():
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('''
         SELECT
             l.id_licencia,
@@ -495,6 +509,7 @@ def exportar_licencias():
         ORDER BY s.area_departamento, l.nombre_licencia
     ''')
     rows = cursor.fetchall()
+    
     cerrar_conexion(cursor, conexion)
 
     # Crear workbook
@@ -623,7 +638,7 @@ def eliminar_licencia(id):
     
 
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     cursor.execute('SELECT id_solicitud FROM licencias WHERE id_licencia = %s', (id,))
     row = cursor.fetchone()
     solicitud_id = row['id_solicitud'] if row else None
@@ -631,6 +646,7 @@ def eliminar_licencia(id):
     cursor.execute('DELETE FROM datos_adicionales WHERE id_licencia = %s', (id,))
     cursor.execute('DELETE FROM copias_seguridad WHERE id_licencia = %s', (id,))
     cursor.execute('DELETE FROM licencias WHERE id_licencia = %s', (id,))
+
     conexion.commit()
     cerrar_conexion(cursor, conexion)
 
@@ -647,7 +663,7 @@ def eliminar_licencia(id):
 @app.route('/detalle/<int:id>')
 def detalle(id):
     conexion = obtener_conexion()
-    cursor = conexion.cursor(dictionary=True)
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute('''
     SELECT 
@@ -693,6 +709,7 @@ def detalle(id):
     ''', (id,))
 
     detalle = cursor.fetchone()
+
     cerrar_conexion(cursor, conexion)
 
     next_view = request.args.get('next')
@@ -713,7 +730,7 @@ def detalle(id):
 @app.route('/actualizar_licencia/<int:id>', methods=['POST'])
 def actualizar_licencia(id):
     conexion = obtener_conexion()
-    cursor = conexion.cursor()
+    cursor = conexion.cursor(cursor_factory=RealDictCursor)
     
     # Obtener los datos del formulario
     data = request.form.to_dict()
