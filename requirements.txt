@@ -11,3 +11,4 @@ gunicorn==21.2.0
 packaging==26.2
 openpyxl
 python-dotenv
+psycopg2-binary==2.9.10
